@@ -3,7 +3,7 @@ package com.viktoria.rentalSup.dao;
 import java.util.List;
 import java.util.Optional;
 
-public interface Dao<K, E> {
+public interface Dao<E, K> {
     boolean delete(K id);
 
     E save(E entity);

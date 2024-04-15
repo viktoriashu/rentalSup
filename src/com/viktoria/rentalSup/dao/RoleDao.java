@@ -2,7 +2,7 @@ package com.viktoria.rentalSup.dao;
 
 import com.viktoria.rentalSup.entity.Role;
 import com.viktoria.rentalSup.exception.DaoException;
-import com.viktoria.rentalSup.util.ConnectionManager;
+import com.viktoria.rentalSup.dataSource.ConnectionManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,7 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RoleDao implements Dao<Long, Role> {
+public class RoleDao implements Dao<Role, Integer> {
+
+    private static final String ROLE_ID = "id";
+    private static final String ROLE_NAME = "role_name";
+
+
+    private RoleDao() {
+    }
 
     private static final RoleDao INSTANCE = new RoleDao();
 
@@ -22,25 +29,25 @@ public class RoleDao implements Dao<Long, Role> {
 
 
     private static final String SAVE_SQL = """
-            INSERT INTO rental_sup_board.role(role_name)
+            INSERT INTO role(role_name)
             VALUES (?);
             """;
 
     private static final String DELETE_SQL = """
-            DELETE FROM rental_sup_board.role
+            DELETE FROM role
             WHERE id = ?
             """;
 
     private static final String UPDATE_SQL = """
-            UPDATE rental_sup_board.role
+            UPDATE role
             SET role_name = ?
             WHERE id = ?
             """;
 
     private static final String FIND_ALL_SQL = """
-            SELECT rental_sup_board.role.id,
+            SELECT role.id,
             role_name
-            FROM rental_sup_board.role
+            FROM role
             """;
 
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
@@ -49,10 +56,10 @@ public class RoleDao implements Dao<Long, Role> {
 
 
     @Override
-    public boolean delete(Long id) {
+    public boolean delete(Integer id) {
         try (var connection = ConnectionManager.get();
              var preparedStatement = connection.prepareStatement(DELETE_SQL)) {
-            preparedStatement.setLong(1, id);
+            preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException throwables) {
@@ -69,7 +76,7 @@ public class RoleDao implements Dao<Long, Role> {
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                role.setId(generatedKeys.getLong("id"));
+                role.setId(generatedKeys.getInt(ROLE_ID));
             }
 
             return role;
@@ -83,7 +90,7 @@ public class RoleDao implements Dao<Long, Role> {
         try (var connection = ConnectionManager.get();
              var preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setString(1, role.getRoleName());
-            preparedStatement.setLong(2, role.getId());
+            preparedStatement.setInt(2, role.getId());
 
             preparedStatement.executeUpdate();
 
@@ -94,10 +101,10 @@ public class RoleDao implements Dao<Long, Role> {
     }
 
     @Override
-    public Optional<Role> findById(Long id) {
+    public Optional<Role> findById(Integer id) {
         try (var connection = ConnectionManager.get();
              var preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
-            preparedStatement.setLong(1, id);
+            preparedStatement.setInt(1, id);
 
             var resultSet = preparedStatement.executeQuery();
             Role role = null;
@@ -112,16 +119,16 @@ public class RoleDao implements Dao<Long, Role> {
 
     }
 
-    public Optional<Role> findById(Long id, Connection connection) {
+    public Optional<Role> findById(Integer id, Connection connection) {
         try (var preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
-            preparedStatement.setLong(1, id);
+            preparedStatement.setInt(1, id);
 
             var resultSet = preparedStatement.executeQuery();
             Role role = null;
             if (resultSet.next()) {
                 role = new Role(
-                        resultSet.getLong("id"),
-                        resultSet.getString("role_name")
+                        resultSet.getInt(ROLE_ID),
+                        resultSet.getString(ROLE_NAME)
                 );
             }
 
@@ -149,7 +156,7 @@ public class RoleDao implements Dao<Long, Role> {
 
 
     private Role buildRole(ResultSet resultSet) throws SQLException {
-        return new Role(resultSet.getLong("id"),
-                resultSet.getString("role_name"));
+        return new Role(resultSet.getInt(ROLE_ID),
+                resultSet.getString(ROLE_NAME));
     }
 }

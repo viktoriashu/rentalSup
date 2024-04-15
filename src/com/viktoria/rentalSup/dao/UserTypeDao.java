@@ -1,10 +1,9 @@
 package com.viktoria.rentalSup.dao;
 
 import com.viktoria.rentalSup.dto.UserTypeFilter;
-import com.viktoria.rentalSup.entity.Role;
 import com.viktoria.rentalSup.entity.UserType;
 import com.viktoria.rentalSup.exception.DaoException;
-import com.viktoria.rentalSup.util.ConnectionManager;
+import com.viktoria.rentalSup.dataSource.ConnectionManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,9 +13,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class UserTypeDao implements Dao<Long, UserType> {
+public class UserTypeDao implements Dao<UserType, Long> {
 
-    public UserTypeDao() {
+    private static final String USER_TYPE_ID = "id";
+    private static final String FIRST_NAME = "first_name";
+    private static final String LAST_NAME = "last_name";
+    private static final String LOGIN = "login";
+    private static final String PASSWORD = "password";
+    private static final String NUMBER = "number";
+
+
+    private UserTypeDao() {
     }
 
     private static final UserTypeDao INSTANCE = new UserTypeDao();
@@ -28,17 +35,17 @@ public class UserTypeDao implements Dao<Long, UserType> {
     private final RoleDao roleDao = RoleDao.getInstance();
 
     private static final String DELETE_SQL = """
-            DELETE FROM rental_sup_board.user_type
+            DELETE FROM user_type
             WHERE id = ?
             """;
 
     private static final String SAVE_SQL = """
-            INSERT INTO rental_sup_board.user_type(first_name, last_name, login, password, number, id_role)
+            INSERT INTO user_type(first_name, last_name, login, password, number, id_role)
             VALUES (?, ?, ?, ?, ?, ?);
             """;
 
     private static final String UPDATE_SQL = """
-            UPDATE rental_sup_board.user_type
+            UPDATE user_type
             SET first_name = ?,
             last_name = ?,
             login = ?,
@@ -49,15 +56,15 @@ public class UserTypeDao implements Dao<Long, UserType> {
             """;
 
     private static final String FIND_ALL_SQL = """
-            SELECT rental_sup_board.user_type.id,
+            SELECT user_type.id,
             first_name,
             last_name,
             login,
             password,
             number,
             r.role_name
-            FROM rental_sup_board.user_type
-            JOIN rental_sup_board.role r
+            FROM user_type
+            JOIN role r
             on user_type.id_role = r.id
             """;
 
@@ -92,7 +99,7 @@ public class UserTypeDao implements Dao<Long, UserType> {
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                userType.setId(generatedKeys.getLong("id"));
+                userType.setId(generatedKeys.getLong(USER_TYPE_ID));
             }
             return userType;
         } catch (SQLException throwables) {
@@ -140,11 +147,11 @@ public class UserTypeDao implements Dao<Long, UserType> {
         List<Object> parameters = new ArrayList<>();
         List<String> whereSql = new ArrayList<>();
         if (filter.number() != null) {
-            whereSql.add("number LIKE ?");
+            whereSql.add(NUMBER + " LIKE ?");
             parameters.add("%" + filter.number() + "%");
         }
         if (filter.lastName() != null) {
-            whereSql.add("last_name = ?");
+            whereSql.add(LAST_NAME + " = ?");
             parameters.add(filter.lastName());
         }
 
@@ -160,6 +167,9 @@ public class UserTypeDao implements Dao<Long, UserType> {
             for (int i = 0; i < parameters.size(); i++) {
                 preparedStatement.setObject(i + 1, parameters.get(i));
             }
+
+
+            //sout заменить на логгер
             System.out.println(preparedStatement);
             var resultSet = preparedStatement.executeQuery();
             List<UserType> userTypes = new ArrayList<>();
@@ -188,17 +198,13 @@ public class UserTypeDao implements Dao<Long, UserType> {
     }
 
     private UserType buildUserType(ResultSet resultSet) throws SQLException {
-        var role = new Role(
-                resultSet.getLong("id"),
-                resultSet.getString("role_name")
-        );
-        return new UserType(resultSet.getLong("id"),
-                resultSet.getString("first_name"),
-                resultSet.getString("last_name"),
-                resultSet.getString("login"),
-                resultSet.getString("password"),
-                resultSet.getString("number"),
-                roleDao.findById(resultSet.getLong("id"),
+        return new UserType(resultSet.getLong(USER_TYPE_ID),
+                resultSet.getString(FIRST_NAME),
+                resultSet.getString(LAST_NAME),
+                resultSet.getString(LOGIN),
+                resultSet.getString(PASSWORD),
+                resultSet.getString(NUMBER),
+                roleDao.findById(resultSet.getInt("id"),
                         resultSet.getStatement().getConnection()).orElse(null));
 
     }

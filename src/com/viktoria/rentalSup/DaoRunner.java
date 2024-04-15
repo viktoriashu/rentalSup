@@ -13,38 +13,38 @@ public class DaoRunner {
 
     public static void main(String[] args) {
 
-//        saveRole();
-//        updateRole();
-//        deleteRole();
+//        new DaoRunner().saveRole();
+//        new DaoRunner().updateRole();
+//        new DaoRunner().deleteRole();
 
-//        deleteUserType();
-//        saveUserType();
-//        updateUserType();
+//        new DaoRunner().deleteUserType();
+//        new DaoRunner().saveUserType();
+//        new DaoRunner().updateUserType();
 
-//        filterUserType();
+//        new DaoRunner().filterUserType();
 
 
     }
 
 
-    private static void saveRole() {
+    private void saveRole() {
         var roleDao = RoleDao.getInstance();
         var role = new Role();
-        role.setRoleName("admin");
+        role.setRoleName("Client");
 
         var savedRole = roleDao.save(role);
         System.out.println(savedRole);
     }
 
-    private static void deleteRole() {
+    private void deleteRole() {
         var roleDao = RoleDao.getInstance();
-        var deleteResult = roleDao.delete(1L);
+        var deleteResult = roleDao.delete(1);
         System.out.println(deleteResult);
     }
 
-    private static void updateRole() {
+    private void updateRole() {
         var roleDao = RoleDao.getInstance();
-        var maybeRole = roleDao.findById(1L);
+        var maybeRole = roleDao.findById(1);
         System.out.println(maybeRole);
 
         maybeRole.ifPresent(role -> {
@@ -55,45 +55,46 @@ public class DaoRunner {
     }
 
 
-    private static void deleteUserType() {
+    private void deleteUserType() {
         var userTypeDao = UserTypeDao.getInstance();
         var deleteResult = userTypeDao.delete(1L);
         System.out.println(deleteResult);
     }
 
 
-    private static void saveUserType() {
+    private void saveUserType() {
         var userTypeDao = UserTypeDao.getInstance();
         var userType = new UserType();
-        userType.setFirstName("Алексей");
-        userType.setLastName("Базанов");
-        userType.setLogin("baza");
-        userType.setPassword("qwerty1234");
-        userType.setNumber("8-920-766-18-10");
-        userType.setRole(RoleDao.getInstance().findById(2L).get());
+        userType.setFirstName("Антон");
+        userType.setLastName("Богданов");
+        userType.setLogin("antokha");
+        userType.setPassword("123qwey");
+        userType.setNumber("8-966-776-75-32");
+        userType.setRole(RoleDao.getInstance().findById(2).get());
 
         var savedUserType = userTypeDao.save(userType);
         System.out.println(savedUserType);
     }
 
-    private static void updateUserType() {
+    private void updateUserType() {
         var userTypeDao = UserTypeDao.getInstance();
-        var maybeUserType = userTypeDao.findById(1L);
+        var maybeUserType = userTypeDao.findById(2L);
         System.out.println(maybeUserType);
 
         maybeUserType.ifPresent(userType -> {
-            userType.setNumber("8-915-736-99-00");
+
+            userType.setRole(RoleDao.getInstance().findById(1).get());
+//            userType.setNumber("8-915-736-99-00");
             userTypeDao.update(userType);
         });
         System.out.println(maybeUserType);
     }
 
 
-    private static void filterUserType() {
-        var userTypeFilter = new UserTypeFilter(2, 0, "Базанов", "8-920");
+    private void filterUserType() {
+        var userTypeFilter = new UserTypeFilter(2, 0, "Зотов", "8-");
 
         var userTypes = UserTypeDao.getInstance().findAll(userTypeFilter);
         System.out.println(userTypes);
     }
-
 }

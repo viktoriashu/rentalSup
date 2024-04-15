@@ -1,4 +1,4 @@
-package com.viktoria.rentalSup.util;
+package com.viktoria.rentalSup.dataSource;
 
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
@@ -16,6 +16,7 @@ public class ConnectionManager {
     private static final String USERNAME_KEY = "db.username";
     private static final String URL_KEY = "db.url";
     private static final String POOL_SIZE_KEY = "db.pool.size";
+    private static final String LOAD_DRIVER = "org.postgresql.Driver";
     private static final Integer DEFAULT_POOL_SIZE = 10;
     private static BlockingQueue<Connection> pool;
     private static List<Connection> sourceConnections;
@@ -67,7 +68,7 @@ public class ConnectionManager {
 
     private static void loadDriver() {
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName(LOAD_DRIVER);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

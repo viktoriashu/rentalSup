@@ -1,6 +1,4 @@
-CREATE DATABASE rental_sup_board_repository;
-
-CREATE SCHEMA rental_sup_board;
+CREATE DATABASE rent_sup;
 
 --Таблица роль. role_name может быть либо "client" либо "admin".
 CREATE TABLE role

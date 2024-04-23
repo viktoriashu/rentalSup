@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static lombok.AccessLevel.*;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -156,11 +157,10 @@ public class StatusSupDao implements Dao<StatusSup, Integer> {
         }
     }
 
-    private StatusSup buildStatusSup(ResultSet resultSet) throws SQLException{
+    private StatusSup buildStatusSup(ResultSet resultSet) throws SQLException {
         return StatusSup.builder()
                 .id(resultSet.getInt(STATUS_SUP_ID))
                 .status(resultSet.getString(STATUS_SUP))
                 .build();
     }
-
 }

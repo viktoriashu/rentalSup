@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static lombok.AccessLevel.*;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -55,7 +56,6 @@ public class StatusClaimDao implements Dao<StatusClaim, Integer> {
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
             WHERE id = ?
             """;
-
 
 
     @Override
@@ -157,11 +157,11 @@ public class StatusClaimDao implements Dao<StatusClaim, Integer> {
             throw new DaoException(throwables);
         }
     }
-    private StatusClaim buildStatusSup(ResultSet resultSet) throws SQLException{
+
+    private StatusClaim buildStatusSup(ResultSet resultSet) throws SQLException {
         return StatusClaim.builder()
                 .id(resultSet.getInt(STATUS_CLAIM_ID))
                 .status(resultSet.getString(STATUS_CLAIM))
                 .build();
     }
-
 }

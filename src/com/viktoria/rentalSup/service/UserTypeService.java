@@ -17,14 +17,14 @@ public class UserTypeService {
     private UserTypeService() {
     }
 
-    public List<UserTypeDto> findAll(){
+    public List<UserTypeDto> findAll() {
         return userTypeDao.findAll().stream()
                 .map(userType -> UserTypeDto.builder()
-                                .id(userType.getId())
-                                .description(
+                        .id(userType.getId())
+                        .description(
                                 """
-                                %s- %s- %s- %s-
-                                """.formatted(userType.getFirstName(), userType.getLastName(), userType.getLogin(), userType.getRole()))
+                                        %s- %s- %s- %s-
+                                        """.formatted(userType.getFirstName(), userType.getLastName(), userType.getLogin(), userType.getRole()))
                         .build()
                 )
                 .collect(toList());

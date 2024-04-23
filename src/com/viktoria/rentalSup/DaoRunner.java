@@ -41,10 +41,7 @@ public class DaoRunner {
 //        new DaoRunner().updateClaim();
 
 
-
-
     }
-
 
 
     private void saveRole() {
@@ -222,7 +219,6 @@ public class DaoRunner {
     }
 
 
-
     private void deleteClaim() {
         var claimDao = ClaimDao.getInstance();
         var deleteResult = claimDao.delete(5L);
@@ -236,12 +232,10 @@ public class DaoRunner {
 
         maybeClaim.ifPresent(claim -> {
 
-            claim.setDataStartRent(LocalDate.of(2024, 6,15));
+            claim.setDataStartRent(LocalDate.of(2024, 6, 15));
 
             claimDao.update(claim);
         });
         System.out.println(maybeClaim);
     }
-
-
 }

@@ -2,6 +2,7 @@ package com.viktoria.rentalSup.entity;
 
 import lombok.*;
 
+
 @Builder
 @Getter
 @Setter

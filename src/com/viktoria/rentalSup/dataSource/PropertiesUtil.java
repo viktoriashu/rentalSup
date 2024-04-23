@@ -1,7 +1,11 @@
 package com.viktoria.rentalSup.dataSource;
 
+import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
+
 import java.io.IOException;
 import java.util.Properties;
+@UtilityClass
 
 public final class PropertiesUtil {
 
@@ -12,18 +16,15 @@ public final class PropertiesUtil {
         loadProperties();
     }
 
-    private PropertiesUtil() {
-    }
 
     public static String get(String key) {
         return PROPERTIES.getProperty(key);
     }
 
+    @SneakyThrows
     private static void loadProperties() {
         try (var inputStream = PropertiesUtil.class.getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES)) {
             PROPERTIES.load(inputStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

@@ -11,8 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 
 
-
-public class Role {
+public class StatusClaim {
     private int id;
-    private String roleName;
+    private String status;
 }
+

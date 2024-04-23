@@ -1,5 +1,8 @@
 package com.viktoria.rentalSup.dataSource;
 
+import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
+
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+@UtilityClass
+
 
 public class ConnectionManager {
 
@@ -16,7 +21,7 @@ public class ConnectionManager {
     private static final String USERNAME_KEY = "db.username";
     private static final String URL_KEY = "db.url";
     private static final String POOL_SIZE_KEY = "db.pool.size";
-    private static final String LOAD_DRIVER = "org.postgresql.Driver";
+    private static final String LOAD_DRIVER = "db.load.driver";
     private static final Integer DEFAULT_POOL_SIZE = 10;
     private static BlockingQueue<Connection> pool;
     private static List<Connection> sourceConnections;
@@ -26,8 +31,6 @@ public class ConnectionManager {
         initConnectionPool();
     }
 
-    private ConnectionManager() {
-    }
 
     private static void initConnectionPool() {
         var poolSize = PropertiesUtil.get(POOL_SIZE_KEY);
@@ -45,6 +48,7 @@ public class ConnectionManager {
             sourceConnections.add(connection);
         }
     }
+
 
     public static Connection get() {
         try {
@@ -68,7 +72,7 @@ public class ConnectionManager {
 
     private static void loadDriver() {
         try {
-            Class.forName(LOAD_DRIVER);
+            Class.forName(PropertiesUtil.get(LOAD_DRIVER));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

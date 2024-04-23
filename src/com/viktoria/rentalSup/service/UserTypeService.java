@@ -1,11 +1,12 @@
 package com.viktoria.rentalSup.service;
 
-import com.viktoria.rentalSup.dao.UserTypeDao;
+import com.viktoria.rentalSup.dao.impl.UserTypeDao;
 import com.viktoria.rentalSup.dto.UserTypeDto;
 
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+
 
 public class UserTypeService {
 
@@ -18,12 +19,14 @@ public class UserTypeService {
 
     public List<UserTypeDto> findAll(){
         return userTypeDao.findAll().stream()
-                .map(userType -> new UserTypeDto(
-                        userType.getId(),
-                        """
+                .map(userType -> UserTypeDto.builder()
+                                .id(userType.getId())
+                                .description(
+                                """
                                 %s- %s- %s- %s-
-                                """.formatted(userType.getFirstName(), userType.getLastName(), userType.getLogin(), userType.getRole())
-                ))
+                                """.formatted(userType.getFirstName(), userType.getLastName(), userType.getLogin(), userType.getRole()))
+                        .build()
+                )
                 .collect(toList());
 
     }

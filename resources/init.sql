@@ -1,4 +1,5 @@
-CREATE DATABASE rent_sup;
+CREATE
+DATABASE rent_sup;
 
 --Таблица роль. role_name может быть либо "client" либо "admin".
 CREATE TABLE role
@@ -49,6 +50,6 @@ CREATE TABLE claim
     id_sup          INT REFERENCES sup (id),
     id_status_claim INT REFERENCES status_claim (id) NOT NULL,
     data_start_rent DATE                             NOT NULL,
-    duration_rent   DOUBLE PRECISION                 NOT NULL,
-    price           INT                              NOT NULL
+    duration_rent   INT                              NOT NULL,
+    price           DOUBLE PRECISION                 NOT NULL
 );

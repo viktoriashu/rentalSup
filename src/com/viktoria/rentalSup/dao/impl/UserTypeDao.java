@@ -1,9 +1,12 @@
-package com.viktoria.rentalSup.dao;
+package com.viktoria.rentalSup.dao.impl;
 
+import com.viktoria.rentalSup.dao.Dao;
 import com.viktoria.rentalSup.dto.UserTypeFilter;
+import com.viktoria.rentalSup.entity.Role;
 import com.viktoria.rentalSup.entity.UserType;
 import com.viktoria.rentalSup.exception.DaoException;
 import com.viktoria.rentalSup.dataSource.ConnectionManager;
+import lombok.NoArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import static lombok.AccessLevel.*;
+
+@NoArgsConstructor(access = PRIVATE)
 
 public class UserTypeDao implements Dao<UserType, Long> {
 
@@ -22,9 +28,10 @@ public class UserTypeDao implements Dao<UserType, Long> {
     private static final String PASSWORD = "password";
     private static final String NUMBER = "number";
 
+    private static final String R_ID = "id";
+    private static final String R_NAME = "role_name";
 
-    private UserTypeDao() {
-    }
+
 
     private static final UserTypeDao INSTANCE = new UserTypeDao();
 
@@ -62,6 +69,7 @@ public class UserTypeDao implements Dao<UserType, Long> {
             login,
             password,
             number,
+            r.id,
             r.role_name
             FROM user_type
             JOIN role r
@@ -116,7 +124,7 @@ public class UserTypeDao implements Dao<UserType, Long> {
             preparedStatement.setString(3, userType.getLogin());
             preparedStatement.setString(4, userType.getPassword());
             preparedStatement.setString(5, userType.getNumber());
-            preparedStatement.setLong(6, userType.getRole().getId());
+            preparedStatement.setInt(6, userType.getRole().getId());
             preparedStatement.setLong(7, userType.getId());
 
             preparedStatement.executeUpdate();
@@ -198,14 +206,19 @@ public class UserTypeDao implements Dao<UserType, Long> {
     }
 
     private UserType buildUserType(ResultSet resultSet) throws SQLException {
-        return new UserType(resultSet.getLong(USER_TYPE_ID),
-                resultSet.getString(FIRST_NAME),
-                resultSet.getString(LAST_NAME),
-                resultSet.getString(LOGIN),
-                resultSet.getString(PASSWORD),
-                resultSet.getString(NUMBER),
-                roleDao.findById(resultSet.getInt("id"),
-                        resultSet.getStatement().getConnection()).orElse(null));
+        var role = Role.builder()
+                .id(resultSet.getInt(R_ID))
+                .roleName(resultSet.getString(R_NAME))
+                .build();
+        return UserType.builder()
+                .id(resultSet.getLong(USER_TYPE_ID))
+                .firstName(resultSet.getString(FIRST_NAME))
+                .lastName(resultSet.getString(LAST_NAME))
+                .login(resultSet.getString(LOGIN))
+                .password(resultSet.getString(PASSWORD))
+                .number(resultSet.getString(NUMBER))
+                .role(role)
+                .build();
 
     }
 }

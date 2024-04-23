@@ -2,6 +2,7 @@ package com.viktoria.rentalSup.entity;
 
 import lombok.*;
 
+
 @Builder
 @Getter
 @Setter
@@ -9,7 +10,6 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-
 
 
 public class Role {

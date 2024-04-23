@@ -163,11 +163,9 @@ public class RoleDao implements Dao<Role, Integer> {
     }
 
     private Role buildRole(ResultSet resultSet) throws SQLException {
-            return Role.builder()
-                    .id(resultSet.getInt(ROLE_ID))
-                    .roleName(resultSet.getString(ROLE_NAME))
-                    .build();
+        return Role.builder()
+                .id(resultSet.getInt(ROLE_ID))
+                .roleName(resultSet.getString(ROLE_NAME))
+                .build();
     }
-
-
 }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import static lombok.AccessLevel.*;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -30,7 +31,6 @@ public class UserTypeDao implements Dao<UserType, Long> {
 
     private static final String R_ID = "id";
     private static final String R_NAME = "role_name";
-
 
 
     private static final UserTypeDao INSTANCE = new UserTypeDao();
@@ -219,6 +219,5 @@ public class UserTypeDao implements Dao<UserType, Long> {
                 .number(resultSet.getString(NUMBER))
                 .role(role)
                 .build();
-
     }
 }

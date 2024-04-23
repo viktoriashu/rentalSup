@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static lombok.AccessLevel.*;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -51,9 +52,11 @@ public class ClaimDao implements Dao<Claim, Long> {
 
 
     private static final ClaimDao INSTANCE = new ClaimDao();
-    public static ClaimDao getInstance(){
+
+    public static ClaimDao getInstance() {
         return INSTANCE;
     }
+
     private static final UserTypeDao userTypeDao = UserTypeDao.getInstance();
 
     private static final String DELETE_SQL = """
@@ -137,8 +140,8 @@ public class ClaimDao implements Dao<Claim, Long> {
              var preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, claim.getClient().getId());
             preparedStatement.setLong(2, claim.getAdmin().getId());
-            preparedStatement.setLong(3,claim.getSup().getId());
-            preparedStatement.setInt(4,claim.getSup().getStatusSup().getId());
+            preparedStatement.setLong(3, claim.getSup().getId());
+            preparedStatement.setInt(4, claim.getSup().getStatusSup().getId());
             //Тут проблема
             preparedStatement.setTimestamp(5, Timestamp.valueOf(claim.getDataStartRent().atStartOfDay()));
             //
@@ -163,14 +166,14 @@ public class ClaimDao implements Dao<Claim, Long> {
              var preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setLong(1, claim.getClient().getId());
             preparedStatement.setLong(2, claim.getAdmin().getId());
-            preparedStatement.setLong(3,claim.getSup().getId());
-            preparedStatement.setInt(4,claim.getSup().getStatusSup().getId());
+            preparedStatement.setLong(3, claim.getSup().getId());
+            preparedStatement.setInt(4, claim.getSup().getStatusSup().getId());
             //Тут проблема
             preparedStatement.setTimestamp(5, Timestamp.valueOf(claim.getDataStartRent().atStartOfDay()));
             //
             preparedStatement.setInt(6, claim.getDurationRent());
             preparedStatement.setBigDecimal(7, claim.getPrice());
-            preparedStatement.setLong(8,claim.getId());
+            preparedStatement.setLong(8, claim.getId());
 
             preparedStatement.executeUpdate();
         } catch (SQLException throwables) {
@@ -217,10 +220,10 @@ public class ClaimDao implements Dao<Claim, Long> {
                 .roleName(resultSet.getString(R_NAME))
                 .build();
         var userType = UserType.builder()
-                        .id(resultSet.getLong(USER_TYPE_ID))
-                        .firstName(resultSet.getString(UT_FIRST_NAME))
-                        .lastName(resultSet.getString(UT_LAST_NAME))
-                                .login(resultSet.getString(UT_LOGIN))
+                .id(resultSet.getLong(USER_TYPE_ID))
+                .firstName(resultSet.getString(UT_FIRST_NAME))
+                .lastName(resultSet.getString(UT_LAST_NAME))
+                .login(resultSet.getString(UT_LOGIN))
                 .password(resultSet.getString(UT_PASSWORD))
                 .number(resultSet.getString(UT_NUMBER))
                 .role(userTypeRole)
@@ -250,7 +253,6 @@ public class ClaimDao implements Dao<Claim, Long> {
                 .dataStartRent(resultSet.getTimestamp(DATA_START_RENT).toLocalDateTime().toLocalDate())
                 .durationRent(resultSet.getInt(PRICE))
                 .build();
-
     }
 }
 

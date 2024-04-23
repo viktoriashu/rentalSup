@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 public class UserTypeServlet extends HttpServlet {
 
     private final UserTypeService userTypeService = UserTypeService.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");

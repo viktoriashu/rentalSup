@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static lombok.AccessLevel.*;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -64,7 +65,6 @@ public class SupDao implements Dao<Sup, Long> {
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
             WHERE sup.id = ?
             """;
-
 
 
     @Override
@@ -145,7 +145,7 @@ public class SupDao implements Dao<Sup, Long> {
         }
     }
 
-    private Sup buildSup(ResultSet resultSet) throws SQLException{
+    private Sup buildSup(ResultSet resultSet) throws SQLException {
         var statusSup = StatusSup.builder()
                 .id(resultSet.getInt(SS_ID))
                 .status(resultSet.getString(SS_STATUS))
@@ -156,5 +156,4 @@ public class SupDao implements Dao<Sup, Long> {
                 .statusSup(statusSup)
                 .build();
     }
-
 }

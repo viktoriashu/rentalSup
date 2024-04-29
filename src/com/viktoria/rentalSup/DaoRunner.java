@@ -1,7 +1,7 @@
 package com.viktoria.rentalSup;
 
 import com.viktoria.rentalSup.dao.impl.*;
-import com.viktoria.rentalSup.dto.UserTypeFilter;
+import com.viktoria.rentalSup.dto.UserTypeDto.UserTypeFilter;
 import com.viktoria.rentalSup.entity.*;
 import com.viktoria.rentalSup.dao.impl.ClaimDao;
 
@@ -41,16 +41,13 @@ public class DaoRunner {
 //        new DaoRunner().updateClaim();
 
 
-
-
     }
-
 
 
     private void saveRole() {
         var roleDao = RoleDao.getInstance();
         var role = new Role();
-        role.setRoleName("Client");
+        role.setRoleName("Visitor");
 
         var savedRole = roleDao.save(role);
         System.out.println(savedRole);
@@ -58,7 +55,7 @@ public class DaoRunner {
 
     private void deleteRole() {
         var roleDao = RoleDao.getInstance();
-        var deleteResult = roleDao.delete(1);
+        var deleteResult = roleDao.delete(18);
         System.out.println(deleteResult);
     }
 
@@ -77,7 +74,7 @@ public class DaoRunner {
 
     private void deleteUserType() {
         var userTypeDao = UserTypeDao.getInstance();
-        var deleteResult = userTypeDao.delete(1L);
+        var deleteResult = userTypeDao.delete(14L);
         System.out.println(deleteResult);
     }
 
@@ -222,7 +219,6 @@ public class DaoRunner {
     }
 
 
-
     private void deleteClaim() {
         var claimDao = ClaimDao.getInstance();
         var deleteResult = claimDao.delete(5L);
@@ -236,7 +232,7 @@ public class DaoRunner {
 
         maybeClaim.ifPresent(claim -> {
 
-            claim.setDataStartRent(LocalDate.of(2024, 6,15));
+            claim.setDataStartRent(LocalDate.of(2024, 6, 15));
 
             claimDao.update(claim);
         });

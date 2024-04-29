@@ -3,6 +3,7 @@ package com.viktoria.rentalSup.dao.impl;
 import com.viktoria.rentalSup.dao.Dao;
 import com.viktoria.rentalSup.dataSource.ConnectionManager;
 import com.viktoria.rentalSup.entity.StatusSup;
+import com.viktoria.rentalSup.enums.StatusSupEnum;
 import com.viktoria.rentalSup.exception.DaoException;
 import lombok.NoArgsConstructor;
 
@@ -13,14 +14,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static lombok.AccessLevel.*;
 
 @NoArgsConstructor(access = PRIVATE)
 
 public class StatusSupDao implements Dao<StatusSup, Integer> {
 
-    private static final String STATUS_SUP_ID = "id";
-    private static final String STATUS_SUP = "status";
+//для удаления если все работает
+//    private static final String STATUS_SUP_ID = "id";
+//    private static final String STATUS_SUP = "status";
 
 
     private static final StatusSupDao INSTANCE = new StatusSupDao();
@@ -65,9 +68,8 @@ public class StatusSupDao implements Dao<StatusSup, Integer> {
 
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-
-            //throw new DaoException(String.format("Error when deleting status sup. Status sup with id %s not found", id), throwable.getCause());
+            throw new DaoException(String.format("Error when deleting status sup. Status sup with id %s not found", id),
+                    throwables.getCause());
         }
     }
 
@@ -80,13 +82,12 @@ public class StatusSupDao implements Dao<StatusSup, Integer> {
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                statusSup.setId(generatedKeys.getInt(STATUS_SUP_ID));
+                statusSup.setId(generatedKeys.getInt(StatusSupEnum.STATUS_SUP_ID.getValue()));
             }
 
             return statusSup;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-            //throw new DaoException ("Error when saving status sup"), throwable.getCause());
+            throw new DaoException("Error when saving status sup", throwables.getCause());
         }
     }
 
@@ -100,8 +101,7 @@ public class StatusSupDao implements Dao<StatusSup, Integer> {
             preparedStatement.executeUpdate();
 
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-            //throw new DaoException ("Error updating status sup"), throwable.getCause());
+            throw new DaoException("Error updating status sup", throwables.getCause());
         }
     }
 
@@ -119,8 +119,7 @@ public class StatusSupDao implements Dao<StatusSup, Integer> {
 
             return Optional.ofNullable(statusSup);
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-            //throw new DaoException(String.format("Status sup with id %s not found", id), throwable.getCause());
+            throw new DaoException(String.format("Status sup with id %s not found", id), throwables.getCause());
         }
     }
 
@@ -132,12 +131,12 @@ public class StatusSupDao implements Dao<StatusSup, Integer> {
             StatusSup statusSup = null;
             if (resultSet.next()) {
                 statusSup = new StatusSup(
-                        resultSet.getInt(STATUS_SUP_ID),
-                        resultSet.getString(STATUS_SUP));
+                        resultSet.getInt(StatusSupEnum.STATUS_SUP_ID.getValue()),
+                        resultSet.getString(StatusSupEnum.STATUS_SUP.getValue()));
             }
             return Optional.ofNullable(statusSup);
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException(String.format("Status sup with id %s not found", id), throwables.getCause());
         }
     }
 
@@ -152,15 +151,14 @@ public class StatusSupDao implements Dao<StatusSup, Integer> {
             }
             return statusSups;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error when calling a method findAll in status sup", throwables.getCause());
         }
     }
 
-    private StatusSup buildStatusSup(ResultSet resultSet) throws SQLException{
+    private StatusSup buildStatusSup(ResultSet resultSet) throws SQLException {
         return StatusSup.builder()
-                .id(resultSet.getInt(STATUS_SUP_ID))
-                .status(resultSet.getString(STATUS_SUP))
+                .id(resultSet.getInt(StatusSupEnum.STATUS_SUP_ID.getValue()))
+                .status(resultSet.getString(StatusSupEnum.STATUS_SUP.getValue()))
                 .build();
     }
-
 }

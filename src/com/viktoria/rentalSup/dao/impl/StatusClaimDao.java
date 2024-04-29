@@ -3,6 +3,7 @@ package com.viktoria.rentalSup.dao.impl;
 import com.viktoria.rentalSup.dao.Dao;
 import com.viktoria.rentalSup.dataSource.ConnectionManager;
 import com.viktoria.rentalSup.entity.StatusClaim;
+import com.viktoria.rentalSup.enums.StatusClaimEnum;
 import com.viktoria.rentalSup.exception.DaoException;
 import lombok.NoArgsConstructor;
 
@@ -13,13 +14,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static lombok.AccessLevel.*;
 
 @NoArgsConstructor(access = PRIVATE)
 public class StatusClaimDao implements Dao<StatusClaim, Integer> {
 
-    private static final String STATUS_CLAIM_ID = "id";
-    private static final String STATUS_CLAIM = "status";
+//для удаления если все работает
+//    private static final String STATUS_CLAIM_ID = "id";
+//    private static final String STATUS_CLAIM = "status";
 
 
     private static final StatusClaimDao INSTANCE = new StatusClaimDao();
@@ -57,7 +60,6 @@ public class StatusClaimDao implements Dao<StatusClaim, Integer> {
             """;
 
 
-
     @Override
     public boolean delete(Integer id) {
         try (var connection = ConnectionManager.get();
@@ -66,9 +68,7 @@ public class StatusClaimDao implements Dao<StatusClaim, Integer> {
 
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-
-            //throw new DaoException(String.format("Error when deleting status claim. Status claim with id %s not found", id), throwable.getCause());
+            throw new DaoException(String.format("Error when deleting status claim. Status claim with id %s not found", id), throwables.getCause());
         }
     }
 
@@ -81,13 +81,12 @@ public class StatusClaimDao implements Dao<StatusClaim, Integer> {
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                statusClaim.setId(generatedKeys.getInt(STATUS_CLAIM_ID));
+                statusClaim.setId(generatedKeys.getInt(StatusClaimEnum.STATUS_CLAIM_ID.getValue()));
             }
 
             return statusClaim;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-            //throw new DaoException ("Error when saving status claim"), throwable.getCause());
+            throw new DaoException("Error when saving status claim", throwables.getCause());
         }
     }
 
@@ -101,8 +100,7 @@ public class StatusClaimDao implements Dao<StatusClaim, Integer> {
             preparedStatement.executeUpdate();
 
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-            //throw new DaoException ("Error updating status claim"), throwable.getCause());
+            throw new DaoException("Error updating status claim", throwables.getCause());
         }
     }
 
@@ -120,8 +118,7 @@ public class StatusClaimDao implements Dao<StatusClaim, Integer> {
 
             return Optional.ofNullable(statusClaim);
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-            //throw new DaoException(String.format("Status sup claim id %s not found", id), throwable.getCause());
+            throw new DaoException(String.format("Status claim id %s not found", id), throwables.getCause());
         }
 
     }
@@ -134,12 +131,12 @@ public class StatusClaimDao implements Dao<StatusClaim, Integer> {
             StatusClaim statusClaim = null;
             if (resultSet.next()) {
                 statusClaim = new StatusClaim(
-                        resultSet.getInt(STATUS_CLAIM_ID),
-                        resultSet.getString(STATUS_CLAIM));
+                        resultSet.getInt(StatusClaimEnum.STATUS_CLAIM_ID.getValue()),
+                        resultSet.getString(StatusClaimEnum.STATUS_CLAIM.getValue()));
             }
             return Optional.ofNullable(statusClaim);
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException(String.format("Status claim id %s not found", id), throwables.getCause());
         }
     }
 
@@ -154,13 +151,14 @@ public class StatusClaimDao implements Dao<StatusClaim, Integer> {
             }
             return statusClaims;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error when calling a method findAll in status claim", throwables.getCause());
         }
     }
-    private StatusClaim buildStatusSup(ResultSet resultSet) throws SQLException{
+
+    private StatusClaim buildStatusSup(ResultSet resultSet) throws SQLException {
         return StatusClaim.builder()
-                .id(resultSet.getInt(STATUS_CLAIM_ID))
-                .status(resultSet.getString(STATUS_CLAIM))
+                .id(resultSet.getInt(StatusClaimEnum.STATUS_CLAIM_ID.getValue()))
+                .status(resultSet.getString(StatusClaimEnum.STATUS_CLAIM.getValue()))
                 .build();
     }
 

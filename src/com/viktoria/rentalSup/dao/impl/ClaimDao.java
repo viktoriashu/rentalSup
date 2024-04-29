@@ -3,6 +3,7 @@ package com.viktoria.rentalSup.dao.impl;
 import com.viktoria.rentalSup.dao.Dao;
 import com.viktoria.rentalSup.dataSource.ConnectionManager;
 import com.viktoria.rentalSup.entity.*;
+import com.viktoria.rentalSup.enums.*;
 import com.viktoria.rentalSup.exception.DaoException;
 import lombok.NoArgsConstructor;
 
@@ -13,47 +14,51 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static lombok.AccessLevel.*;
 
 @NoArgsConstructor(access = PRIVATE)
 
 public class ClaimDao implements Dao<Claim, Long> {
 
-    private static final String CLAIM_ID = "id";
-    private static final String ID_CLIENT = "id_client";
-    private static final String ID_ADMIN = "id_admin";
-    private static final String ID_SUP = "id_sup";
-    private static final String ID_STATUS_CLAIM = "id_status_claim";
-    private static final String DATA_START_RENT = "data_start_rent";
-    private static final String DURATION_RENT = "duration_rent";
-    private static final String PRICE = "price";
+//для удаления если все работает
+//    private static final String CLAIM_ID = "id";
+//    private static final String ID_CLIENT = "id_client";
+//    private static final String ID_ADMIN = "id_admin";
+//    private static final String ID_SUP = "id_sup";
+//    private static final String ID_STATUS_CLAIM = "id_status_claim";
+//    private static final String DATA_START_RENT = "data_start_rent";
+//    private static final String DURATION_RENT = "duration_rent";
+//    private static final String PRICE = "price";
 
 
-    private static final String USER_TYPE_ID = "id";
-    private static final String UT_FIRST_NAME = "first_name";
-    private static final String UT_LAST_NAME = "last_name";
-    private static final String UT_LOGIN = "login";
-    private static final String UT_PASSWORD = "password";
-    private static final String UT_NUMBER = "number";
-    private static final String UT_ID_ROLE = "id_role";
+//    private static final String USER_TYPE_ID = "id";
+//    private static final String UT_FIRST_NAME = "first_name";
+//    private static final String UT_LAST_NAME = "last_name";
+//    private static final String UT_LOGIN = "login";
+//    private static final String UT_PASSWORD = "password";
+//    private static final String UT_NUMBER = "number";
+//    private static final String UT_ID_ROLE = "id_role";
 
-    private static final String R_ID = "id";
-    private static final String R_NAME = "role_name";
+//    private static final String R_ID = "id";
+//    private static final String R_NAME = "role_name";
 
-    private static final String SS_ID = "id";
-    private static final String SS_STATUS = "status";
+//    private static final String SS_ID = "id";
+//    private static final String SS_STATUS = "status";
 
-    private static final String SUP_ID = "id";
-    private static final String SUP_MODEL = "model";
+//    private static final String SUP_ID = "id";
+//    private static final String SUP_MODEL = "model";
 
-    private static final String STATUS_CLAIM_ID = "id";
-    private static final String STATUS_CLAIM = "status";
+//    private static final String STATUS_CLAIM_ID = "id";
+//    private static final String STATUS_CLAIM = "status";
 
 
     private static final ClaimDao INSTANCE = new ClaimDao();
-    public static ClaimDao getInstance(){
+
+    public static ClaimDao getInstance() {
         return INSTANCE;
     }
+
     private static final UserTypeDao userTypeDao = UserTypeDao.getInstance();
 
     private static final String DELETE_SQL = """
@@ -127,7 +132,8 @@ public class ClaimDao implements Dao<Claim, Long> {
 
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException(String.format("Error when deleting claim. Claim with id %s not found", id),
+                    throwables.getCause());
         }
     }
 
@@ -137,8 +143,8 @@ public class ClaimDao implements Dao<Claim, Long> {
              var preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, claim.getClient().getId());
             preparedStatement.setLong(2, claim.getAdmin().getId());
-            preparedStatement.setLong(3,claim.getSup().getId());
-            preparedStatement.setInt(4,claim.getSup().getStatusSup().getId());
+            preparedStatement.setLong(3, claim.getSup().getId());
+            preparedStatement.setInt(4, claim.getSup().getStatusSup().getId());
             //Тут проблема
             preparedStatement.setTimestamp(5, Timestamp.valueOf(claim.getDataStartRent().atStartOfDay()));
             //
@@ -149,11 +155,11 @@ public class ClaimDao implements Dao<Claim, Long> {
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                claim.setId(generatedKeys.getLong(CLAIM_ID));
+                claim.setId(generatedKeys.getLong(ClaimEnum.CLAIM_ID.getValue()));
             }
             return claim;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error when saving claim", throwables.getCause());
         }
     }
 
@@ -163,18 +169,18 @@ public class ClaimDao implements Dao<Claim, Long> {
              var preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setLong(1, claim.getClient().getId());
             preparedStatement.setLong(2, claim.getAdmin().getId());
-            preparedStatement.setLong(3,claim.getSup().getId());
-            preparedStatement.setInt(4,claim.getSup().getStatusSup().getId());
+            preparedStatement.setLong(3, claim.getSup().getId());
+            preparedStatement.setInt(4, claim.getSup().getStatusSup().getId());
             //Тут проблема
             preparedStatement.setTimestamp(5, Timestamp.valueOf(claim.getDataStartRent().atStartOfDay()));
             //
             preparedStatement.setInt(6, claim.getDurationRent());
             preparedStatement.setBigDecimal(7, claim.getPrice());
-            preparedStatement.setLong(8,claim.getId());
+            preparedStatement.setLong(8, claim.getId());
 
             preparedStatement.executeUpdate();
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error updating claim", throwables.getCause());
         }
     }
 
@@ -192,7 +198,7 @@ public class ClaimDao implements Dao<Claim, Long> {
 
             return Optional.ofNullable(claim);
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException(String.format("Claim with id %s not found", id), throwables.getCause());
         }
     }
 
@@ -207,50 +213,49 @@ public class ClaimDao implements Dao<Claim, Long> {
             }
             return claims;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error when calling a method findAll in claim", throwables.getCause());
         }
     }
 
     private Claim buildClaim(ResultSet resultSet) throws SQLException {
         var userTypeRole = Role.builder()
-                .id(resultSet.getInt(R_ID))
-                .roleName(resultSet.getString(R_NAME))
+                .id(resultSet.getInt(RoleEnum.ROLE_ID.getValue()))
+                .roleName(resultSet.getString(RoleEnum.ROLE_NAME.getValue()))
                 .build();
         var userType = UserType.builder()
-                        .id(resultSet.getLong(USER_TYPE_ID))
-                        .firstName(resultSet.getString(UT_FIRST_NAME))
-                        .lastName(resultSet.getString(UT_LAST_NAME))
-                                .login(resultSet.getString(UT_LOGIN))
-                .password(resultSet.getString(UT_PASSWORD))
-                .number(resultSet.getString(UT_NUMBER))
+                .id(resultSet.getLong(UserTypeEnum.USER_TYPE_ID.getValue()))
+                .firstName(resultSet.getString(UserTypeEnum.FIRST_NAME.getValue()))
+                .lastName(resultSet.getString(UserTypeEnum.LAST_NAME.getValue()))
+                .login(resultSet.getString(UserTypeEnum.LOGIN.getValue()))
+                .password(resultSet.getString(UserTypeEnum.PASSWORD.getValue()))
+                .number(resultSet.getString(UserTypeEnum.NUMBER.getValue()))
                 .role(userTypeRole)
                 .build();
         var statusSup = StatusSup.builder()
-                .id(resultSet.getInt(SS_ID))
-                .status(resultSet.getString(SS_STATUS))
+                .id(resultSet.getInt(StatusSupEnum.STATUS_SUP_ID.getValue()))
+                .status(resultSet.getString(StatusSupEnum.STATUS_SUP.getValue()))
                 .build();
 
         var sup = Sup.builder()
-                .id(resultSet.getLong(SUP_ID))
-                .model(resultSet.getString(SUP_MODEL))
+                .id(resultSet.getLong(SupEnum.SUP_ID.getValue()))
+                .model(resultSet.getString(SupEnum.MODEL.getValue()))
                 .statusSup(statusSup)
                 .build();
 
         var statusClaim = StatusClaim.builder()
-                .id(resultSet.getInt(STATUS_CLAIM_ID))
-                .status(resultSet.getString(STATUS_CLAIM))
+                .id(resultSet.getInt(StatusClaimEnum.STATUS_CLAIM_ID.getValue()))
+                .status(resultSet.getString(StatusClaimEnum.STATUS_CLAIM.getValue()))
                 .build();
 
         return Claim.builder()
-                .id(resultSet.getLong(CLAIM_ID))
+                .id(resultSet.getLong(ClaimEnum.CLAIM_ID.getValue()))
                 .client(userType)
                 .admin(userType)
                 .sup(sup)
                 .statusClaim(statusClaim)
-                .dataStartRent(resultSet.getTimestamp(DATA_START_RENT).toLocalDateTime().toLocalDate())
-                .durationRent(resultSet.getInt(PRICE))
+                .dataStartRent(resultSet.getTimestamp(ClaimEnum.DATA_START_RENT.getValue()).toLocalDateTime().toLocalDate())
+                .durationRent(resultSet.getInt(ClaimEnum.PRICE.getValue()))
                 .build();
-
     }
 }
 

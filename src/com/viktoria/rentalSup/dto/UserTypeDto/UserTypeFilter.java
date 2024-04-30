@@ -1,4 +1,4 @@
-package com.viktoria.rentalSup.dto;
+package com.viktoria.rentalSup.dto.UserTypeDto;
 
 
 public record UserTypeFilter(int limit,

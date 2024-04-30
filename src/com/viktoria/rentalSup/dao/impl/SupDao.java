@@ -4,6 +4,8 @@ import com.viktoria.rentalSup.dao.Dao;
 import com.viktoria.rentalSup.dataSource.ConnectionManager;
 import com.viktoria.rentalSup.entity.StatusSup;
 import com.viktoria.rentalSup.entity.Sup;
+import com.viktoria.rentalSup.enums.StatusSupEnum;
+import com.viktoria.rentalSup.enums.SupEnum;
 import com.viktoria.rentalSup.exception.DaoException;
 import lombok.NoArgsConstructor;
 
@@ -13,17 +15,19 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static lombok.AccessLevel.*;
 
 @NoArgsConstructor(access = PRIVATE)
 
 public class SupDao implements Dao<Sup, Long> {
 
-    private static final String SUP_ID = "id";
-    private static final String MODEL = "model";
+//для удаления если все работает
+//    private static final String SUP_ID = "id";
+//    private static final String MODEL = "model";
 
-    private static final String SS_ID = "id";
-    private static final String SS_STATUS = "status";
+//    private static final String SS_ID = "id";
+//    private static final String SS_STATUS = "status";
 
 
     private static final SupDao INSTANCE = new SupDao();
@@ -66,7 +70,6 @@ public class SupDao implements Dao<Sup, Long> {
             """;
 
 
-
     @Override
     public boolean delete(Long id) {
         try (var connection = ConnectionManager.get();
@@ -75,7 +78,8 @@ public class SupDao implements Dao<Sup, Long> {
 
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException(String.format("Error when deleting sup. Sup with id %s not found", id),
+                    throwables.getCause());
         }
     }
 
@@ -89,11 +93,11 @@ public class SupDao implements Dao<Sup, Long> {
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                sup.setId(generatedKeys.getLong(SUP_ID));
+                sup.setId(generatedKeys.getLong(SupEnum.SUP_ID.getValue()));
             }
             return sup;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error when saving sup", throwables.getCause());
         }
     }
 
@@ -107,7 +111,7 @@ public class SupDao implements Dao<Sup, Long> {
 
             preparedStatement.executeUpdate();
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error updating sup", throwables.getCause());
         }
     }
 
@@ -126,7 +130,7 @@ public class SupDao implements Dao<Sup, Long> {
 
             return Optional.ofNullable(sup);
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException(String.format("Sup with id %s not found", id), throwables.getCause());
         }
     }
 
@@ -141,18 +145,18 @@ public class SupDao implements Dao<Sup, Long> {
             }
             return sups;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error when calling a method findAll in sup", throwables.getCause());
         }
     }
 
-    private Sup buildSup(ResultSet resultSet) throws SQLException{
+    private Sup buildSup(ResultSet resultSet) throws SQLException {
         var statusSup = StatusSup.builder()
-                .id(resultSet.getInt(SS_ID))
-                .status(resultSet.getString(SS_STATUS))
+                .id(resultSet.getInt(StatusSupEnum.STATUS_SUP_ID.getValue()))
+                .status(resultSet.getString(StatusSupEnum.STATUS_SUP.getValue()))
                 .build();
         return Sup.builder()
-                .id(resultSet.getLong(SUP_ID))
-                .model(resultSet.getString(MODEL))
+                .id(resultSet.getLong(SupEnum.SUP_ID.getValue()))
+                .model(resultSet.getString(SupEnum.MODEL.getValue()))
                 .statusSup(statusSup)
                 .build();
     }

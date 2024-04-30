@@ -2,6 +2,7 @@ package com.viktoria.rentalSup.dao.impl;
 
 import com.viktoria.rentalSup.dao.Dao;
 import com.viktoria.rentalSup.entity.Role;
+import com.viktoria.rentalSup.enums.RoleEnum;
 import com.viktoria.rentalSup.exception.DaoException;
 import com.viktoria.rentalSup.dataSource.ConnectionManager;
 import lombok.AccessLevel;
@@ -21,8 +22,9 @@ import static lombok.AccessLevel.*;
 
 public class RoleDao implements Dao<Role, Integer> {
 
-    private static final String ROLE_ID = "id";
-    private static final String ROLE_NAME = "role_name";
+//для удаления если все работает
+//    private static final String ROLE_ID = "id";
+//    private static final String ROLE_NAME = "role_name";
 
 
     private static final RoleDao INSTANCE = new RoleDao();
@@ -67,9 +69,7 @@ public class RoleDao implements Dao<Role, Integer> {
 
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-
-            //throw new DaoException(String.format("Error when deleting user role. Role with id %s not found", id), throwable.getCause());
+            throw new DaoException(String.format("Error when deleting user role. Role with id %s not found", id), throwables.getCause());
         }
     }
 
@@ -82,13 +82,12 @@ public class RoleDao implements Dao<Role, Integer> {
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                role.setId(generatedKeys.getInt(ROLE_ID));
+                role.setId(generatedKeys.getInt(RoleEnum.ROLE_ID.getValue()));
             }
 
             return role;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-            //throw new DaoException ("Error when saving user role"), throwable.getCause());
+            throw new DaoException("Error when saving user role", throwables.getCause());
         }
     }
 
@@ -102,8 +101,7 @@ public class RoleDao implements Dao<Role, Integer> {
             preparedStatement.executeUpdate();
 
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-            //throw new DaoException ("Error updating user role"), throwable.getCause());
+            throw new DaoException("Error updating user role", throwables.getCause());
         }
     }
 
@@ -121,8 +119,7 @@ public class RoleDao implements Dao<Role, Integer> {
 
             return Optional.ofNullable(role);
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
-            //throw new DaoException(String.format("Role with id %s not found", id), throwable.getCause());
+            throw new DaoException(String.format("Role with id %s not found", id), throwables.getCause());
         }
 
     }
@@ -135,14 +132,14 @@ public class RoleDao implements Dao<Role, Integer> {
             Role role = null;
             if (resultSet.next()) {
                 role = new Role(
-                        resultSet.getInt(ROLE_ID),
-                        resultSet.getString(ROLE_NAME)
+                        resultSet.getInt(RoleEnum.ROLE_ID.getValue()),
+                        resultSet.getString(RoleEnum.ROLE_NAME.getValue())
                 );
             }
 
             return Optional.ofNullable(role);
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException(String.format("Role with id %s not found", id), throwables.getCause());
         }
     }
 
@@ -158,16 +155,14 @@ public class RoleDao implements Dao<Role, Integer> {
             }
             return roles;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error when calling a method findAll in user role", throwables.getCause());
         }
     }
 
     private Role buildRole(ResultSet resultSet) throws SQLException {
-            return Role.builder()
-                    .id(resultSet.getInt(ROLE_ID))
-                    .roleName(resultSet.getString(ROLE_NAME))
-                    .build();
+        return Role.builder()
+                .id(resultSet.getInt(RoleEnum.ROLE_ID.getValue()))
+                .roleName(resultSet.getString(RoleEnum.ROLE_NAME.getValue()))
+                .build();
     }
-
-
 }

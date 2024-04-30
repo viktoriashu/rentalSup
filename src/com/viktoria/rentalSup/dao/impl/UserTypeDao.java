@@ -1,9 +1,11 @@
 package com.viktoria.rentalSup.dao.impl;
 
 import com.viktoria.rentalSup.dao.Dao;
-import com.viktoria.rentalSup.dto.UserTypeFilter;
+import com.viktoria.rentalSup.dto.UserTypeDto.UserTypeFilter;
 import com.viktoria.rentalSup.entity.Role;
 import com.viktoria.rentalSup.entity.UserType;
+import com.viktoria.rentalSup.enums.RoleEnum;
+import com.viktoria.rentalSup.enums.UserTypeEnum;
 import com.viktoria.rentalSup.exception.DaoException;
 import com.viktoria.rentalSup.dataSource.ConnectionManager;
 import lombok.NoArgsConstructor;
@@ -15,22 +17,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import static lombok.AccessLevel.*;
 
 @NoArgsConstructor(access = PRIVATE)
 
 public class UserTypeDao implements Dao<UserType, Long> {
 
-    private static final String USER_TYPE_ID = "id";
-    private static final String FIRST_NAME = "first_name";
-    private static final String LAST_NAME = "last_name";
-    private static final String LOGIN = "login";
-    private static final String PASSWORD = "password";
-    private static final String NUMBER = "number";
+//для удаления если все работает
+//    private static final String USER_TYPE_ID = "id";
+//    private static final String FIRST_NAME = "first_name";
+//    private static final String LAST_NAME = "last_name";
+//    private static final String LOGIN = "login";
+//    private static final String PASSWORD = "password";
+//    private static final String NUMBER = "number";
 
-    private static final String R_ID = "id";
-    private static final String R_NAME = "role_name";
-
+//    private static final String R_ID = "id";
+//    private static final String R_NAME = "role_name";
 
 
     private static final UserTypeDao INSTANCE = new UserTypeDao();
@@ -89,7 +92,8 @@ public class UserTypeDao implements Dao<UserType, Long> {
 
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException(String.format("Error when deleting user type. User type with id %s not found", id),
+                    throwables.getCause());
         }
     }
 
@@ -107,11 +111,11 @@ public class UserTypeDao implements Dao<UserType, Long> {
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                userType.setId(generatedKeys.getLong(USER_TYPE_ID));
+                userType.setId(generatedKeys.getLong(UserTypeEnum.USER_TYPE_ID.getValue()));
             }
             return userType;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error when saving user type", throwables.getCause());
         }
     }
 
@@ -129,7 +133,7 @@ public class UserTypeDao implements Dao<UserType, Long> {
 
             preparedStatement.executeUpdate();
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error updating user type", throwables.getCause());
         }
     }
 
@@ -147,7 +151,7 @@ public class UserTypeDao implements Dao<UserType, Long> {
 
             return Optional.ofNullable(userType);
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException(String.format("User type with id %s not found", id), throwables.getCause());
         }
     }
 
@@ -155,11 +159,11 @@ public class UserTypeDao implements Dao<UserType, Long> {
         List<Object> parameters = new ArrayList<>();
         List<String> whereSql = new ArrayList<>();
         if (filter.number() != null) {
-            whereSql.add(NUMBER + " LIKE ?");
+            whereSql.add((UserTypeEnum.NUMBER.getValue()) + " LIKE ?");
             parameters.add("%" + filter.number() + "%");
         }
         if (filter.lastName() != null) {
-            whereSql.add(LAST_NAME + " = ?");
+            whereSql.add((UserTypeEnum.LAST_NAME.getValue()) + " = ?");
             parameters.add(filter.lastName());
         }
 
@@ -186,7 +190,7 @@ public class UserTypeDao implements Dao<UserType, Long> {
             }
             return userTypes;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error when calling a method findAll in user type", throwables.getCause());
         }
     }
 
@@ -201,22 +205,22 @@ public class UserTypeDao implements Dao<UserType, Long> {
             }
             return userTypes;
         } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+            throw new DaoException("Error when calling a method findAll in user type", throwables.getCause());
         }
     }
 
     private UserType buildUserType(ResultSet resultSet) throws SQLException {
         var role = Role.builder()
-                .id(resultSet.getInt(R_ID))
-                .roleName(resultSet.getString(R_NAME))
+                .id(resultSet.getInt(RoleEnum.ROLE_ID.getValue()))
+                .roleName(resultSet.getString(RoleEnum.ROLE_NAME.getValue()))
                 .build();
         return UserType.builder()
-                .id(resultSet.getLong(USER_TYPE_ID))
-                .firstName(resultSet.getString(FIRST_NAME))
-                .lastName(resultSet.getString(LAST_NAME))
-                .login(resultSet.getString(LOGIN))
-                .password(resultSet.getString(PASSWORD))
-                .number(resultSet.getString(NUMBER))
+                .id(resultSet.getLong(UserTypeEnum.USER_TYPE_ID.getValue()))
+                .firstName(resultSet.getString(UserTypeEnum.FIRST_NAME.getValue()))
+                .lastName(resultSet.getString(UserTypeEnum.LAST_NAME.getValue()))
+                .login(resultSet.getString(UserTypeEnum.LOGIN.getValue()))
+                .password(resultSet.getString(UserTypeEnum.PASSWORD.getValue()))
+                .number(resultSet.getString(UserTypeEnum.NUMBER.getValue()))
                 .role(role)
                 .build();
 

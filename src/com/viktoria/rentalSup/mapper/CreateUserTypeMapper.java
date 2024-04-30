@@ -19,7 +19,7 @@ public class CreateUserTypeMapper implements Mapper<CreateUserTypeDto, UserType>
         return INSTANCE;
     }
 
-    private static final RoleDao roleDao = RoleDao.getInstance();
+    private final RoleDao roleDao = RoleDao.getInstance();
 
     @Override
     public UserType mapFrom(CreateUserTypeDto object) {

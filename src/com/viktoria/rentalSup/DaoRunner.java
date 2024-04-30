@@ -101,7 +101,7 @@ public class DaoRunner {
         maybeUserType.ifPresent(userType -> {
 
             userType.setRole(RoleDao.getInstance().findById(1).get());
-//            userType.setNumber("8-915-736-99-00");
+            userType.setNumber("8-915-736-88-85");
             userTypeDao.update(userType);
         });
         System.out.println(maybeUserType);

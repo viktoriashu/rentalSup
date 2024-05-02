@@ -9,6 +9,7 @@ import com.viktoria.rentalSup.enums.UserTypeEnum;
 import com.viktoria.rentalSup.exception.DaoException;
 import com.viktoria.rentalSup.dataSource.ConnectionManager;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -82,6 +83,12 @@ public class UserTypeDao implements Dao<UserType, Long> {
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
             WHERE user_type.id = ?
             """;
+
+    private static final String GET_BY_LOGIN_AND_PASSWORD_SQL = FIND_ALL_SQL + """
+            WHERE login = ? AND password = ?
+            """;
+
+
 
 
     @Override
@@ -208,6 +215,24 @@ public class UserTypeDao implements Dao<UserType, Long> {
             throw new DaoException("Error when calling a method findAll in user type", throwables.getCause());
         }
     }
+
+    @SneakyThrows
+    public Optional<UserType> findByLoginAndPassword(String login, String password) {
+        try (var connection = ConnectionManager.get();
+             var preparedStatement = connection.prepareStatement(GET_BY_LOGIN_AND_PASSWORD_SQL)) {
+            preparedStatement.setString(1, login);
+            preparedStatement.setString(2, password);
+
+            var resultSet = preparedStatement.executeQuery();
+            UserType userType = null;
+            if (resultSet.next()) {
+                userType = buildUserType(resultSet);
+            }
+
+            return Optional.ofNullable(userType);
+        }
+    }
+
 
     private UserType buildUserType(ResultSet resultSet) throws SQLException {
         var role = Role.builder()

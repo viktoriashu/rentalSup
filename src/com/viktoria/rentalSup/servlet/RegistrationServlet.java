@@ -49,7 +49,7 @@ public class RegistrationServlet extends HttpServlet {
 
         try {
             userTypeService.create(userTypeDto);
-            resp.sendRedirect("/login");
+            resp.sendRedirect("/" + PageEnum.LOGIN_PAGE.getValue());
         } catch (ValidationException exception) {
             req.setAttribute(ERRORS, exception.getErrors());
             doGet(req, resp);

@@ -14,7 +14,8 @@ import static com.viktoria.rentalSup.enums.PageEnum.*;
 @WebFilter("/*")
 public class AuthorizationFilter implements Filter {
 
-    private static final Set<String> PUBLIC_PATH = Set.of("/" + LOGIN_PAGE.getValue(), "/" + REGISTRATION_PAGE.getValue());
+    private static final Set<String> PUBLIC_PATH = Set.of(SLASH.getValue() + LOGIN_PAGE.getValue(),
+            SLASH.getValue() + REGISTRATION_PAGE.getValue(), SLASH.getValue() + LOCALE.getValue());
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         var uri = ((HttpServletRequest) servletRequest).getRequestURI();

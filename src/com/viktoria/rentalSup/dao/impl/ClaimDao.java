@@ -7,10 +7,13 @@ import com.viktoria.rentalSup.enums.*;
 import com.viktoria.rentalSup.exception.DaoException;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +63,10 @@ public class ClaimDao implements Dao<Claim, Long> {
     }
 
     private static final UserTypeDao userTypeDao = UserTypeDao.getInstance();
+    private static final SupDao supDao = SupDao.getInstance();
+    private static final StatusClaimDao statusClaimDao = StatusClaimDao.getInstance();
+//    private static final StatusSupDao statusSupDao = StatusSupDao.getInstance();
+
 
     private static final String DELETE_SQL = """
             DELETE FROM claim
@@ -87,23 +94,33 @@ public class ClaimDao implements Dao<Claim, Long> {
     private static final String FIND_ALL_SQL = """
             SELECT claim.id,
             id_client,
+                ut1.id,
                 ut1.first_name,
                 ut1.last_name,
                 ut1.login,
                 ut1.password,
                 ut1.number,
+                ut1.id_role,
+                    r1.id,
                     r1.role_name,
             id_admin,
+                ut2.id,
                 ut2.first_name,
                 ut2.last_name,
                 ut2.login,
                 ut2.password,
                 ut2.number,
+                ut2.id_role,
+                    r2.id,
                     r2.role_name,
             id_sup,
+                s.id,
                 s.model,
+                s.id_status_sup,
+                ss.id,
                 ss.status,
             id_status_claim,
+                sc.id,
                 sc.status,
             data_start_rent,
             duration_rent,
@@ -117,6 +134,50 @@ public class ClaimDao implements Dao<Claim, Long> {
                 JOIN public.status_sup ss on ss.id = s.id_status_sup
                 JOIN public.status_claim sc on sc.id = claim.id_status_claim
             """;
+
+//    private static final String FIND_ALL_SQL = """
+//            SELECT claim.id,
+//            id_client,
+//                ut1.id,
+//                ut1.first_name,
+//                ut1.last_name,
+//                ut1.login,
+//                ut1.password,
+//                ut1.number,
+//                ut1.id_role,
+//                    r1.id,
+//                    r1.role_name,
+//            id_admin,
+//                ut2.id,
+//                ut2.first_name,
+//                ut2.last_name,
+//                ut2.login,
+//                ut2.password,
+//                ut2.number,
+//                ut2.id_role,
+//                    r2.id,
+//                    r2.role_name,
+//            id_sup,
+//                s.id,
+//                s.model,
+//                s.id_status_sup,
+//                ss.id,
+//                ss.status,
+//            id_status_claim,
+//                sc.id,
+//                sc.status,
+//            data_start_rent,
+//            duration_rent,
+//            price
+//            FROM claim
+//                JOIN user_type ut1 on ut1.id = claim.id_client
+//                JOIN user_type ut2 on ut2.id = claim.id_admin
+//                JOIN role r1 on r1.id = ut1.id_role
+//                JOIN role r2 on r2.id = ut2.id_role
+//                JOIN public.sup s on s.id = claim.id_sup
+//                JOIN public.status_sup ss on ss.id = s.id_status_sup
+//                JOIN public.status_claim sc on sc.id = claim.id_status_claim
+//            """;
 
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
             WHERE claim.id = ?
@@ -147,6 +208,9 @@ public class ClaimDao implements Dao<Claim, Long> {
             preparedStatement.setInt(4, claim.getSup().getStatusSup().getId());
             //Тут проблема
             preparedStatement.setTimestamp(5, Timestamp.valueOf(claim.getDataStartRent().atStartOfDay()));
+//            preparedStatement.setTimestamp(5, Timestamp.valueOf(claim.getDataStartRent().atTime(LocalTime.MIDNIGHT)));
+                    ;
+
             //
             preparedStatement.setInt(6, claim.getDurationRent());
             preparedStatement.setBigDecimal(7, claim.getPrice());
@@ -218,43 +282,20 @@ public class ClaimDao implements Dao<Claim, Long> {
     }
 
     private Claim buildClaim(ResultSet resultSet) throws SQLException {
-        var userTypeRole = Role.builder()
-                .id(resultSet.getInt(RoleEnum.ROLE_ID.getValue()))
-                .roleName(resultSet.getString(RoleEnum.ROLE_NAME.getValue()))
-                .build();
-        var userType = UserType.builder()
-                .id(resultSet.getLong(UserTypeEnum.USER_TYPE_ID.getValue()))
-                .firstName(resultSet.getString(UserTypeEnum.FIRST_NAME.getValue()))
-                .lastName(resultSet.getString(UserTypeEnum.LAST_NAME.getValue()))
-                .login(resultSet.getString(UserTypeEnum.LOGIN.getValue()))
-                .password(resultSet.getString(UserTypeEnum.PASSWORD.getValue()))
-                .number(resultSet.getString(UserTypeEnum.NUMBER.getValue()))
-                .role(userTypeRole)
-                .build();
-        var statusSup = StatusSup.builder()
-                .id(resultSet.getInt(StatusSupEnum.STATUS_SUP_ID.getValue()))
-                .status(resultSet.getString(StatusSupEnum.STATUS_SUP.getValue()))
-                .build();
-
-        var sup = Sup.builder()
-                .id(resultSet.getLong(SupEnum.SUP_ID.getValue()))
-                .model(resultSet.getString(SupEnum.MODEL.getValue()))
-                .statusSup(statusSup)
-                .build();
-
-        var statusClaim = StatusClaim.builder()
-                .id(resultSet.getInt(StatusClaimEnum.STATUS_CLAIM_ID.getValue()))
-                .status(resultSet.getString(StatusClaimEnum.STATUS_CLAIM.getValue()))
-                .build();
+        UserType client = userTypeDao.findById(resultSet.getLong(ClaimEnum.ID_CLIENT.getValue())).orElse(null);
+        UserType admin = userTypeDao.findById(resultSet.getLong(ClaimEnum.ID_ADMIN.getValue())).orElse(null);
+        Sup sup = supDao.findById(resultSet.getLong(ClaimEnum.ID_SUP.getValue())).orElse(null);
+        StatusClaim statusClaim = statusClaimDao.findById(resultSet.getInt(ClaimEnum.ID_STATUS_CLAIM.getValue())).orElse(null);
 
         return Claim.builder()
                 .id(resultSet.getLong(ClaimEnum.CLAIM_ID.getValue()))
-                .client(userType)
-                .admin(userType)
+                .client(client)
+                .admin(admin)
                 .sup(sup)
                 .statusClaim(statusClaim)
                 .dataStartRent(resultSet.getTimestamp(ClaimEnum.DATA_START_RENT.getValue()).toLocalDateTime().toLocalDate())
-                .durationRent(resultSet.getInt(ClaimEnum.PRICE.getValue()))
+                .durationRent(resultSet.getInt(ClaimEnum.DURATION_RENT.getValue()))
+                .price(resultSet.getBigDecimal(ClaimEnum.PRICE.getValue()))
                 .build();
     }
 }

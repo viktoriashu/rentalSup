@@ -27,7 +27,7 @@ public class SupService {
                         .description(
                                 """
                                               %s - %s
-                                        """.formatted(sup.getModel(), sup.getStatusSup())
+                                        """.formatted(sup.getModel(), sup.getStatusSup().getStatus())
                         ).build()).collect(Collectors.toList());
     }
 

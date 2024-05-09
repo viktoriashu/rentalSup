@@ -66,6 +66,19 @@ public class UserTypeDao implements Dao<UserType, Long> {
             WHERE id = ?
             """;
 
+//    private static final String FIND_ALL_SQL = """
+//            SELECT user_type.id,
+//            first_name,
+//            last_name,
+//            login,
+//            password,
+//            number,
+//            r.id,
+//            r.role_name
+//            FROM user_type
+//            JOIN role r
+//            on user_type.id_role = r.id
+//            """;
     private static final String FIND_ALL_SQL = """
             SELECT user_type.id,
             first_name,
@@ -73,6 +86,7 @@ public class UserTypeDao implements Dao<UserType, Long> {
             login,
             password,
             number,
+            id_role,
             r.id,
             r.role_name
             FROM user_type
@@ -234,11 +248,24 @@ public class UserTypeDao implements Dao<UserType, Long> {
     }
 
 
+//    private UserType buildUserType(ResultSet resultSet) throws SQLException {
+//        var role = Role.builder()
+//                .id(resultSet.getInt(RoleEnum.ROLE_ID.getValue()))
+//                .roleName(resultSet.getString(RoleEnum.ROLE_NAME.getValue()))
+//                .build();
+//        return UserType.builder()
+//                .id(resultSet.getLong(UserTypeEnum.USER_TYPE_ID.getValue()))
+//                .firstName(resultSet.getString(UserTypeEnum.FIRST_NAME.getValue()))
+//                .lastName(resultSet.getString(UserTypeEnum.LAST_NAME.getValue()))
+//                .login(resultSet.getString(UserTypeEnum.LOGIN.getValue()))
+//                .password(resultSet.getString(UserTypeEnum.PASSWORD.getValue()))
+//                .number(resultSet.getString(UserTypeEnum.NUMBER.getValue()))
+//                .role(role)
+//                .build();
+//
+//    }
     private UserType buildUserType(ResultSet resultSet) throws SQLException {
-        var role = Role.builder()
-                .id(resultSet.getInt(RoleEnum.ROLE_ID.getValue()))
-                .roleName(resultSet.getString(RoleEnum.ROLE_NAME.getValue()))
-                .build();
+        Role role = roleDao.findById(resultSet.getInt(UserTypeEnum.ID_ROLE.getValue())).orElse(null);
         return UserType.builder()
                 .id(resultSet.getLong(UserTypeEnum.USER_TYPE_ID.getValue()))
                 .firstName(resultSet.getString(UserTypeEnum.FIRST_NAME.getValue()))

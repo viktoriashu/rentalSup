@@ -23,21 +23,49 @@ public class CreateUserTypeMapper implements Mapper<CreateUserTypeDto, UserType>
 
     @Override
     public UserType mapFrom(CreateUserTypeDto object) {
-        String roleName = null;
-        Optional<Role> optionalRole = roleDao.findById(Integer.parseInt(object.getRoleId()));
-        if (optionalRole.isPresent()) {
-            roleName = optionalRole.get().getRoleName();
-        }
+        Role role = roleDao.findById(Integer.parseInt(object.getRoleId()))
+                .get();
+
         return UserType.builder()
                 .firstName(object.getFirstName())
                 .lastName(object.getLastName())
                 .login(object.getLogin())
                 .password(object.getPassword())
                 .number(object.getNumber())
-                .role(Role.builder()
-                        .id(Integer.parseInt(object.getRoleId()))
-                        .roleName(roleName)
-                        .build())
+                .role(role)
                 .build();
     }
 }
+
+
+//@NoArgsConstructor(access = PRIVATE)
+//public class CreateUserTypeMapper implements Mapper<CreateUserTypeDto, UserType> {
+//
+//    private static final CreateUserTypeMapper INSTANCE = new CreateUserTypeMapper();
+//
+//    public static CreateUserTypeMapper getInstance() {
+//        return INSTANCE;
+//    }
+//
+//    private final RoleDao roleDao = RoleDao.getInstance();
+//
+//    @Override
+//    public UserType mapFrom(CreateUserTypeDto object) {
+//        String roleName = null;
+//        Optional<Role> optionalRole = roleDao.findById(Integer.parseInt(object.getRoleId()));
+//        if (optionalRole.isPresent()) {
+//            roleName = optionalRole.get().getRoleName();
+//        }
+//        return UserType.builder()
+//                .firstName(object.getFirstName())
+//                .lastName(object.getLastName())
+//                .login(object.getLogin())
+//                .password(object.getPassword())
+//                .number(object.getNumber())
+//                .role(Role.builder()
+//                        .id(Integer.parseInt(object.getRoleId()))
+//                        .roleName(roleName)
+//                        .build())
+//                .build();
+//    }
+//}

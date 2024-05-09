@@ -77,17 +77,19 @@
                                     <input type="text" name="number" id="number" class="form-control form-control-lg"/>
                                 </div>
 
-                                <div class="form-outline mb-4">
-                                    <label class="form-label" for="role"><fmt:message
-                                            key="page.registration.role"/>:</label>
 
-                                    <select data-mdb-select-init name="role" id="role">
-                                        <c:forEach var="role" items="${requestScope.roles}">
-                                            <option value="${role.id}">${role.roleName}</option>
-                                        </c:forEach>
-                                    </select>
+<%--                                для админки--%>
+<%--                                <div class="form-outline mb-4">--%>
+<%--                                    <label class="form-label" for="role"><fmt:message--%>
+<%--                                            key="page.registration.role"/>:</label>--%>
 
-                                </div>
+<%--                                    <select data-mdb-select-init name="role" id="role">--%>
+<%--                                        <c:forEach var="role" items="${requestScope.roles}">--%>
+<%--                                            <option value="${role.id}">${role.roleName}</option>--%>
+<%--                                        </c:forEach>--%>
+<%--                                    </select>--%>
+
+<%--                                </div>--%>
 
                                 <div class="d-flex justify-content-center">
                                     <button type="submit"

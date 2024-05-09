@@ -3,7 +3,8 @@ package com.viktoria.rentalSup.enums;
 public enum SupEnum {
 
     SUP_ID("id"),
-    MODEL("model");
+    MODEL("model"),
+    ID_STATUS_SUP("id_status_sup");
 
     private String value;
 

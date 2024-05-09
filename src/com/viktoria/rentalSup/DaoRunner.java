@@ -28,7 +28,6 @@ public class DaoRunner {
 
 //        new DaoRunner().saveSup();
 //        new DaoRunner().deleteSup();
-        //проверить выдает ошибку
 //        new DaoRunner().updateSup();
 
 //        new DaoRunner().saveStatusClaim();
@@ -37,7 +36,6 @@ public class DaoRunner {
 
 //        new DaoRunner().saveClaim();
 //        new DaoRunner().deleteClaim();
-        //проверить выдает ошибку
 //        new DaoRunner().updateClaim();
 
 
@@ -95,13 +93,15 @@ public class DaoRunner {
 
     private void updateUserType() {
         var userTypeDao = UserTypeDao.getInstance();
-        var maybeUserType = userTypeDao.findById(2L);
+        var maybeUserType = userTypeDao.findById(16L);
         System.out.println(maybeUserType);
 
         maybeUserType.ifPresent(userType -> {
+            userType.setFirstName("Александр");
+            userType.setLastName("Белов");
 
-            userType.setRole(RoleDao.getInstance().findById(1).get());
-            userType.setNumber("8-915-736-88-85");
+//            userType.setRole(RoleDao.getInstance().findById(1).get());
+//            userType.setNumber("8-915-736-88-85");
             userTypeDao.update(userType);
         });
         System.out.println(maybeUserType);
@@ -206,13 +206,13 @@ public class DaoRunner {
     private void saveClaim() {
         var claimDao = ClaimDao.getInstance();
         var claim = new Claim();
-        claim.setClient(UserTypeDao.getInstance().findById(3L).get());
-        claim.setAdmin(UserTypeDao.getInstance().findById(2L).get());
-        claim.setSup(SupDao.getInstance().findById(1L).get());
-        claim.setStatusClaim(StatusClaimDao.getInstance().findById(1).get());
-        claim.setDataStartRent(LocalDate.of(2024, 6, 13));
+        claim.setClient(UserTypeDao.getInstance().findById(6L).get());
+        claim.setAdmin(UserTypeDao.getInstance().findById(1L).get());
+        claim.setSup(SupDao.getInstance().findById(2L).get());
+        claim.setStatusClaim(StatusClaimDao.getInstance().findById(2).get());
+        claim.setDataStartRent(LocalDate.of(2024, 6, 15));
         claim.setDurationRent(1);
-        claim.setPrice(BigDecimal.valueOf(1100));
+        claim.setPrice(BigDecimal.valueOf(1200));
 
         var savedClaim = claimDao.save(claim);
         System.out.println(savedClaim);
@@ -231,13 +231,10 @@ public class DaoRunner {
         System.out.println(maybeClaim);
 
         maybeClaim.ifPresent(claim -> {
-
-            claim.setDataStartRent(LocalDate.of(2024, 6, 15));
-
+            claim.setSup(SupDao.getInstance().findById(3L).get());
+//            claim.setDataStartRent(LocalDate.of(2024, 6, 15));
             claimDao.update(claim);
         });
         System.out.println(maybeClaim);
     }
-
-
 }

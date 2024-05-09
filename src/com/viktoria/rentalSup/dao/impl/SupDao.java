@@ -23,12 +23,6 @@ import static lombok.AccessLevel.*;
 public class SupDao implements Dao<Sup, Long> {
 
 //для удаления если все работает
-//    private static final String SUP_ID = "id";
-//    private static final String MODEL = "model";
-
-//    private static final String SS_ID = "id";
-//    private static final String SS_STATUS = "status";
-
 
     private static final SupDao INSTANCE = new SupDao();
 
@@ -56,14 +50,20 @@ public class SupDao implements Dao<Sup, Long> {
             WHERE id = ?
             """;
 
-    private static final String FIND_ALL_SQL = """
-            SELECT sup.id,
-            model,
-            ss.status
-            FROM sup
-            JOIN public.status_sup ss
-            on sup.id_status_sup = ss.id
-            """;
+    private static final String FIND_ALL_SQL;
+
+    static {
+        FIND_ALL_SQL = """
+                SELECT sup.id,
+                model,
+                id_status_sup,
+                ss.id,
+                ss.status
+                FROM sup
+                JOIN public.status_sup ss
+                on sup.id_status_sup = ss.id
+                """;
+    }
 
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
             WHERE sup.id = ?
@@ -150,15 +150,11 @@ public class SupDao implements Dao<Sup, Long> {
     }
 
     private Sup buildSup(ResultSet resultSet) throws SQLException {
-        var statusSup = StatusSup.builder()
-                .id(resultSet.getInt(StatusSupEnum.STATUS_SUP_ID.getValue()))
-                .status(resultSet.getString(StatusSupEnum.STATUS_SUP.getValue()))
-                .build();
+        StatusSup statusSup = statusSupDao.findById(resultSet.getInt(SupEnum.ID_STATUS_SUP.getValue())).orElse(null);
         return Sup.builder()
                 .id(resultSet.getLong(SupEnum.SUP_ID.getValue()))
                 .model(resultSet.getString(SupEnum.MODEL.getValue()))
                 .statusSup(statusSup)
                 .build();
     }
-
 }

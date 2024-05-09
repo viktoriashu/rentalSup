@@ -7,7 +7,8 @@ public enum UserTypeEnum {
     LAST_NAME("last_name"),
     LOGIN("login"),
     PASSWORD("password"),
-    NUMBER("number");
+    NUMBER("number"),
+    ID_ROLE("id_role");
 
     private String value;
 
